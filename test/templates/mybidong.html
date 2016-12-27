@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>壁咚WiFi</title>
+<link rel="Shortcut Icon" href="/images/bidong.ico" />
+<link rel="Bookmark" href="/images/bidong.ico" />
+<script type="text/javascript" src="/js/html5shiv.js"></script>
+<link rel="stylesheet" href="/css/main.css" />
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/json2.js"></script>
+<script type="text/javascript" src="/js/query.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/msg.js"></script>
+<!--[if lt IE 10]><script type="text/javascript" src="/js/placeholder.js"></script><![endif]-->
+<script type="text/javascript" src="/js/checkFunc.js"></script>
+</head>
+
+<body>
+	<header class="contentHeader">
+    	<nav>
+        	<a href="/" class="logo">壁咚WiFi</a><span class="headerName">上网账户管理系统</span>
+            <!--<ul>-->
+            	<!--<li><a href="/">首页</a></li>-->
+                <!--<li><a href="javascript:void(0);" class="actived">我的壁咚</a></li>-->
+            <!--</ul>-->
+        </nav>
+    </header>
+
+    <aside>
+        <div><img src="/images/face.jpg" />&nbsp;</div>
+        <ul class="dongbi">
+            <!-- <li><label>壁咚WiFi</label><span>28/40</span></li>
+            <li><div class="line"></div></li> -->
+            <li class="firstLi"><label>可上网时间</label><span>${days}天 + ${hours}</span></li>
+        </ul>
+    </aside>
+
+    <section class="seclg">
+        <ul>
+            <li>
+                <p class="s1">当前咚币</p>
+                <p class="s2">${coin}</p>
+                <p>1RMB=10咚币</p>
+                <p>1咚币可免费上网10分钟</p>
+                <input type="button" value="充值" class="srg" />
+            </li>
+            <li>
+                <p class="s3" style="text-indent: 48px;">上网账号可咨询管理员</p>
+                <p style="text-indent: 48px; visibility: hidden;">（仅限壁咚WiFi已覆盖楼体）</p>
+                <div id="formCag">
+                    <input type="text" placeholder="请输入房间号" class="ipu_text" value="" id="reRoom" />
+                    <input type="password" placeholder="请输入充值密码" class="ipu_text showPH" value="" id="rePwd" />
+                    <input type="submit" value="连接上网" class="ipu_submit" />
+                </div>
+            </li>
+            <li style="border-left: 1px solid #ececec; padding: 0 0 0 35px;">
+                <p class="s3">手机上网指南</p>
+                <img src="/images/ewm02.png" width="150" height="150" />
+                <p class="s4">关注微信公众号，一键上网</p>
+                <p class="s5">壁咚WiFi</p>
+            </li>
+        </ul>
+    </section>
+
+    <figure>
+    	<a href="javascript:void(0);" class="apply">在线申请</a>
+    	<img src="/images/ad01.jpg" width="1002" height="348" />
+    </figure>
+
+    <!--<figure>-->
+    	<!--<a href="javascript:void(0);" class="buy">立即购买</a>-->
+    	<!--<img src="/images/ad02.jpg" width="1002" height="348" />-->
+    <!--</figure>-->
+
+    <footer>
+        <p>ICP备案编号：粤ICP备16031487号-1 版权所有：中国科学院计算机网络信息中心</p>
+        <p>地址：广州市南沙区环市大道南2号南沙资讯科技园香港科大霍英东研究院科技楼三楼</p>
+        <p>电话：+86-20-39393309　邮箱：bidong@niot.cn</p>
+    </footer>
+
+    <div class="rechargebox">
+        <h2>咚币充值<em>1元=10咚币</em><a href="javascript:void(0);">X</a></h2>
+        <div>
+            <input type="text" placeholder="输入充值金额（最低5元）" />
+            <p>选择支付方式</p>
+            <input type="button" class="zf on" value="微信支付" style="margin-right: 9px;" /> <input type="button" class="zf" value="支付宝支付" />
+            <input type="button" class="charge" value="立即支付" />
+            <span class="errorMsg"><em>!</em>请输入充值金额！</span>
+        </div>
+    </div>
+
+    <div class="addressbox">
+        <h2>在线申请<a href="javascript:void(0);" class="close">X</a></h2>
+        <div class="addGroup">
+            <input type="text" placeholder="输入联系人" id="atten" />
+            <input type="text" placeholder="输入联系电话" id="tel" />
+            <div><select id="selpro"></select><i></i></div>
+            <div><select id="selcity"></select><i></i></div>
+            <div><select id="selarea"></select><i></i></div>
+            <input type="text" placeholder="输入详细地址" style="margin-bottom: 0;" id="addrDet" />
+            <input type="button" class="applyok" value="确定" />
+            <span class="errorMsg"></span>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".srg").click(function(){
+                $.MsgBox.Alert("暂未开通");
+            });
+        })
+    </script>
+</body>
+</html>
