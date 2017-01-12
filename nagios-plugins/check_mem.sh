@@ -6,20 +6,16 @@ SCRIPT=`basename ${BASH_SOURCE[0]}`
 #Set default values
 optMW=80
 optMC=90
-optSW=80
-optSC=90
 
 # help function
 function printHelp {
   echo -e \\n"Help for $SCRIPT"\\n
-  echo -e "Basic usage: $SCRIPT -w {warning} -c {critical} -W {warning} -C {critical}"\\n
+  echo -e "Basic usage: $SCRIPT -w {warning} -c {critical}"\\n
   echo "Command switches are optional, default values for warning is 80% and critical is 90%"
   echo "-w - Sets warning value for Memory Usage. Default is 80%"
   echo "-c - Sets critical value for Memory Usage. Default is 90%"
-  echo "-W - Sets warning value for Swap Usage. Default is 80%"
-  echo "-C - Sets critical value for Swap Usage. Default is 90%"
   echo -e "-h  - Displays this help message"\\n
-  echo -e "Example: $SCRIPT -w 80 -c 90 -W 40 -C 60"\\n
+  echo -e "Example: $SCRIPT -w 80 -c 90"\\n
   exit 1
 }
 
@@ -42,20 +38,6 @@ while getopts :w:c:W:C:h FLAG; do
         optMC=$OPTARG
       fi
       ;;
-    W)
-      if ! [[ $OPTARG =~ $re ]] ; then
-        echo "error: Not a number" >&2; exit 1
-      else
-        optSW=$OPTARG
-      fi
-      ;;
-    C)
-      if ! [[ $OPTARG =~ $re ]] ; then
-        echo "error: Not a number" >&2; exit 1
-      else
-        optSC=$OPTARG
-      fi
-      ;;
     h)
       printHelp
       ;;
@@ -68,10 +50,6 @@ while getopts :w:c:W:C:h FLAG; do
 done
 
 shift $((OPTIND-1))
-
-
-
-
 
 array=( $(cat /proc/meminfo | egrep 'MemTotal|MemFree|Buffers|Cached|SwapTotal|SwapFree' |awk '{print $1 " " $2}' |tr '\n' ' ' |tr -d ':' |awk '{ printf("%i %i %i %i %i %i %i", $2, $4, $6, $8, $10, $12, $14) }') )
 
@@ -91,29 +69,13 @@ memUsed_b=$(($memTotal_b-$memFree_b-$memBuffer_b-$memCache_b))
 memUsed_m=$(($memTotal_m-$memFree_m-$memBuffer_m-$memCache_m))
 memUsedPrc=$((($memUsed_b*100)/$memTotal_b))
 
-swapTotal_k=${array[5]}
-swapTotal_b=$(($swapTotal_k*1024))
-swapFree_k=${array[6]}
-swapFree_b=$(($swapFree_k*1024))
-swapUsed_k=$(($swapTotal_k-$swapFree_k))
-swapUsed_b=$(($swapUsed_k*1024))
-swapTotal_m=$(($swapTotal_k/1024))
-swapFree_m=$(($swapFree_k/1024))
-swapUsed_m=$(($swapTotal_m-$swapFree_m))
-
-if [ $swapTotal_k -eq 0 ]; then
-    swapUsedPrc=0
-else
-    swapUsedPrc=$((($swapUsed_k*100)/$swapTotal_k))
-fi
-
-message="[MEMORY] Total: $memTotal_m MB - Used: $memUsed_m MB - $memUsedPrc% [SWAP] Total: $swapTotal_m MB - Used: $swapUsed_m MB - $swapUsedPrc% | Memory Usage=$memUsedPrc%;;;; Swap Usage=$swapUsedPrc%;;;;"
+message="MEMORY OK - Total: $memTotal_m MB - Used: $memUsed_m MB - Usaged: $memUsedPrc % | Memory Usage=$memUsedPrc %;;;;"
 
 
-if [ $memUsedPrc -ge $optMC ] || [ $swapUsedPrc -ge $optSC ]; then
+if [ $memUsedPrc -ge $optMC ]; then
   echo -e $message
   $(exit 2)
-elif [ $memUsedPrc -ge $optMW ] || [ $swapUsedPrc -ge $optSW ]; then
+elif [ $memUsedPrc -ge $optMW ]; then
   echo -e $message
   $(exit 1)
 else
