@@ -4,24 +4,22 @@
 SCRIPT=`basename ${BASH_SOURCE[0]}`
 
 #Set default values
-optMW=95
-optMC=98
-optSW=95
-optSC=98
+optMW=80
+optMC=90
+optSW=80
+optSC=90
 
 # help function
 function printHelp {
   echo -e \\n"Help for $SCRIPT"\\n
   echo -e "Basic usage: $SCRIPT -w {warning} -c {critical} -W {warning} -C {critical}"\\n
-  echo "Command switches are optional, default values for warning is 95% and critical is 98%"
-  echo "-w - Sets warning value for Memory Usage. Default is 95%"
-  echo "-c - Sets critical value for Memory Usage. Default is 98%"
-  echo "-W - Sets warning value for Swap Usage. Default is 95%"
-  echo "-C - Sets critical value for Swap Usage. Default is 98%"
+  echo "Command switches are optional, default values for warning is 80% and critical is 90%"
+  echo "-w - Sets warning value for Memory Usage. Default is 80%"
+  echo "-c - Sets critical value for Memory Usage. Default is 90%"
+  echo "-W - Sets warning value for Swap Usage. Default is 80%"
+  echo "-C - Sets critical value for Swap Usage. Default is 90%"
   echo -e "-h  - Displays this help message"\\n
   echo -e "Example: $SCRIPT -w 80 -c 90 -W 40 -C 60"\\n
-  echo -e \\n\\n"Author: Lukasz Gogolin, lukasz.gogolin@gmail.com"
-  echo -e "Git: http://bitbucket.org/lgogolin/nagios_plugins"
   exit 1
 }
 
@@ -109,7 +107,7 @@ else
     swapUsedPrc=$((($swapUsed_k*100)/$swapTotal_k))
 fi
 
-message="[MEMORY] Total: $memTotal_m MB - Used: $memUsed_m MB - $memUsedPrc% [SWAP] Total: $swapTotal_m MB - Used: $swapUsed_m MB - $swapUsedPrc% | MTOTAL=$memTotal_b;;;; MUSED=$memUsed_b;;;; MCACHE=$memCache_b;;;; MBUFFER=$memBuffer_b;;;; STOTAL=$swapTotal_b;;;; SUSED=$swapUsed_b;;;;"
+message="[MEMORY] Total: $memTotal_m MB - Used: $memUsed_m MB - $memUsedPrc% [SWAP] Total: $swapTotal_m MB - Used: $swapUsed_m MB - $swapUsedPrc% | Memory Usage=$memUsedPrc%;;;; Swap Usage=$swapUsedPrc%;;;;"
 
 
 if [ $memUsedPrc -ge $optMC ] || [ $swapUsedPrc -ge $optSC ]; then
