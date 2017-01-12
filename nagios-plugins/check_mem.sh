@@ -22,7 +22,7 @@ function printHelp {
 # regex to check is OPTARG an integer
 re='^[0-9]+$'
 
-while getopts :w:c:W:C:h FLAG; do
+while getopts :w:c:h FLAG; do
   case $FLAG in
     w)
       if ! [[ $OPTARG =~ $re ]] ; then
