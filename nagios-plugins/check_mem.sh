@@ -69,7 +69,7 @@ memUsed_b=$(($memTotal_b-$memFree_b-$memBuffer_b-$memCache_b))
 memUsed_m=$(($memTotal_m-$memFree_m-$memBuffer_m-$memCache_m))
 memUsedPrc=$((($memUsed_b*100)/$memTotal_b))
 
-message="MEMORY OK - Total: $memTotal_m MB - Used: $memUsed_m MB - Usaged: $memUsedPrc % | Memory Usage=$memUsedPrc %;;;;"
+message="MEMORY OK - Total: $memTotal_m MB, Used: $memUsed_m MB, Usage: $memUsedPrc% | Memory Usage=$memUsedPrc%;$optMW;$optMC;0"
 
 
 if [ $memUsedPrc -ge $optMC ]; then
