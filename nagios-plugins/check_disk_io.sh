@@ -178,7 +178,7 @@ status=2
 fi
 fi
 # Printing the results:
-MSG="$STATE - I/O stats: Transfers/Sec=$tps Read Requests/Sec=$read_sec Write Requests/Sec=$written_sec KBytes Read/Sec=$kbytes_read_sec KBytes_Written/Sec=$kbytes_written_sec"
+MSG="DISK I/O $STATE - I/O Stats: Transfers/Sec = $tps, Read Requests/Sec = $read_sec, Write Requests/Sec = $written_sec, KBytes Read/Sec = $kbytes_read_sec, KBytes Written/Sec = $kbytes_written_sec"
 PERFDATA=" | total_io_sec'=$tps; read_io_sec=$read_sec; write_io_sec=$written_sec; kbytes_read_sec=$kbytes_read_sec; kbytes_written_sec=$kbytes_written_sec;"
 fi
 
@@ -209,7 +209,7 @@ fi
 
 
 # Printing the results:
-MSG="$STATE - Disk Queue Stats: Average Request Size=$qsize Average Queue Length=$qlength"
+MSG="DISK I/O $STATE - Disk Queue Stats: Average Request Size = $qsize, Average Queue Length = $qlength"
 PERFDATA=" | qsize=$qsize; queue_length=$qlength;"
 fi
 
@@ -251,7 +251,7 @@ fi
 fi
 
 # Printing the results:
-MSG="$STATE - Wait Time Stats: Avg I/O Wait Time (ms)=$avgwait Avg Read Wait Time (ms)=$avgrwait Avg Write Wait Time (ms)=$avgwwait Avg Service Wait Time (ms)=$avgsvctime Avg CPU Utilization=$avgcpuutil"
+MSG="DISK I/O $STATE - Wait Time Stats: Avg I/O Wait Time(ms) = $avgwait, Avg Read Wait Time(ms) = $avgrwait, Avg Write Wait Time(ms) = $avgwwait, Avg Service Wait Time(ms) = $avgsvctime, Avg CPU Utilization = $avgcpuutil"
 PERFDATA=" | avg_io_waittime_ms=$avgwait; avg_r_waittime_ms=$avgrwait; avg_w_waittime_ms=$avgwwait; avg_service_waittime_ms=$avgsvctime; avg_cpu_utilization=$avgcpuutil;"
 fi
 
@@ -259,6 +259,6 @@ fi
 
 # now output the official result
 echo -n "$MSG"
-if [ "x$printperfdata" == "x1" ]; then echo -n "$PERFDATA"; fi
+echo -n "$PERFDATA"
 echo ""
 exit $status
