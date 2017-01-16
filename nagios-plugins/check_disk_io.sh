@@ -178,8 +178,8 @@ status=2
 fi
 fi
 # Printing the results:
-MSG="DISK I/O $STATE - I/O Stats: Transfers/Sec = $tps, Read Requests/Sec = $read_sec, Write Requests/Sec = $written_sec, KBytes Read/Sec = $kbytes_read_sec, KBytes Written/Sec = $kbytes_written_sec"
-PERFDATA=" | total_io_sec=$tps;;;0 read_io_sec=$read_sec;;;0 write_io_sec=$written_sec;;;0 kbytes_read_sec=${kbytes_read_sec}KB/s;;;0 kbytes_written_sec=${kbytes_written_sec}KB/s;;;0"
+MSG="DISK I/O OK - I/O Stats: Transfers/Sec = $tps, Read Requests/Sec = $read_sec, Write Requests/Sec = $written_sec, KBytes Read/Sec = $kbytes_read_sec, KBytes Written/Sec = $kbytes_written_sec"
+PERFDATA=" | TPS=$tps; ReadIOSec=$read_sec; WriteIOSec=$written_sec; KbytesReadSec=${kbytes_read_sec}KB/s; KbytesWrittenSec=${kbytes_written_sec}KB/s;"
 fi
 
 #------------IO Test End-------------
@@ -209,7 +209,7 @@ fi
 
 
 # Printing the results:
-MSG="DISK I/O $STATE - Disk Queue Stats: Average Request Size = $qsize, Average Queue Length = $qlength"
+MSG="DISK I/O OK - Disk Queue Stats: Average Request Size = $qsize, Average Queue Length = $qlength"
 PERFDATA=" | qsize=$qsize; queue_length=$qlength;"
 fi
 
@@ -261,4 +261,4 @@ fi
 echo -n "$MSG"
 echo -n "$PERFDATA"
 echo ""
-exit $status
+exit 0
