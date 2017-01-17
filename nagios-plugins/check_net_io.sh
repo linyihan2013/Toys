@@ -1,6 +1,3 @@
-GREP=/bin/grep
-CUT=/usr/bin/cut
-
 interface=""
 RESULT=""
 
@@ -21,28 +18,11 @@ function help {
 	exit 1
 }
 
-## Process command line options
-function do_opts {
-    while getopts :i:h myarg; do
-        case $myarg in
-            h|\?)
-                help
-				;;
-            i)
-                interface=$OPTARG
-				;;
-            *)      # Default
-                help
-				;;
-        esac
-    done
-}
-
 # This function parses /proc/net/dev file searching for a line containing $interface data.
 # Within that line, the first and ninth numbers after ':' are respectively the received and transmited bytes.
 function get_bytes
 {
-    line=$(cat /proc/net/dev | grep $interface | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
+    line=$(cat /proc/net/dev | grep $interface | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')   
     eval $line
 }
 
@@ -64,8 +44,17 @@ function output {
     exit $EXIT_STATUS
 }
 
-# Handle command line options
-do_opts
+# Handle command line option
+while getopts i:h myarg; do
+    case $myarg in
+        h|\?)
+            help
+			;;
+        i)
+            interface=$OPTARG
+			;;
+    esac
+done
 
 get_bytes
 old_received_bytes=$received_bytes
