@@ -179,7 +179,7 @@ fi
 fi
 # Printing the results:
 MSG="DISK I/O OK - I/O Stats: Transfers/Sec = $tps, Read Requests/Sec = $read_sec, Write Requests/Sec = $written_sec, KBytes Read/Sec = $kbytes_read_sec, KBytes Written/Sec = $kbytes_written_sec"
-PERFDATA=" | TPS=$tps; ReadIOSec=$read_sec; WriteIOSec=$written_sec; KbytesReadSec=${kbytes_read_sec}KB/s; KbytesWrittenSec=${kbytes_written_sec}KB/s;"
+PERFDATA=" | TPS=$tps; ReadIOSec=$read_sec; WriteIOSec=$written_sec; KBReadSec=${kbytes_read_sec}KB/s; KBWrittenSec=${kbytes_written_sec}KB/s;"
 fi
 
 #------------IO Test End-------------
