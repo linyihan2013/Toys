@@ -1,61 +1,91 @@
-#!/bin/bash
+GREP=/bin/grep
+CUT=/usr/bin/cut
 
-ip=/bin/ip
+interface=""
+RESULT=""
 
-usage() { echo "Usage: 
-	$0 -i dev -t int>0 -w int>0 -c int>0"
-echo "Options:
-	-h  show this page;
-	-t  time interval between checks, in sec (default = 1sec);
-	-i  name of network interface;
-	-w  warning level (in KB) integer more then zero;
-	-c  critical level (in KB) integer more then zero;"
-exit 2;
+received_bytes=""
+old_received_bytes=""
+transmitted_bytes=""
+old_transmitted_bytes=""
+
+
+function help {
+    echo " check_net_io - Nagios network I/O check script"
+    echo ""
+    echo " Usage: check_net_io {-i} [-h]"
+    echo ""
+    echo "           -i  Interface to check (e.g. eth0)"
+    echo "           -h  Show this page"
+    echo ""
+	exit 1
 }
 
-output () {
-	if [[ ${rx_rate:0:1} = \. ]]; then rx_rate=${rx_rate/\./0.}; fi
-        if [[ ${tx_rate:0:1} = \. ]]; then tx_rate=${tx_rate/\./0.}; fi
-	echo "NET I/O $code - $int:$state in-rate:${rx_rate}KB/s out-rate:${tx_rate}KB/s | InRate=${rx_rate}KB/s OutRate=${tx_rate}KB/s";
+## Process command line options
+function do_opts {
+    while getopts :i:h myarg; do
+        case $myarg in
+            h|\?)
+                help
+				;;
+            i)
+                interface=$OPTARG
+				;;
+            *)      # Default
+                help
+				;;
+        esac
+    done
 }
 
-while getopts ":hi:t::w:c:" opt; do
-  case $opt in
-    h)  usage;;
-    \?) echo "Invalid option \"$OPTARG\" Please check help page"; exit 2;;
-    i)  int=$OPTARG;;
-    t)  [[ $OPTARG -gt 0 ]] && t=$OPTARG || t=1;;
-    w)  [[ $OPTARG -gt 0 ]] && warn_lvl=$OPTARG || usage;;
-    c)  [[ $OPTARG -gt 0 ]] && crit_lvl=$OPTARG || usage;;
-    :) echo "Option \"$OPTARG\" requires an argument."; exit 2;;
-    *)  usage;;
-  esac
-done
+# This function parses /proc/net/dev file searching for a line containing $interface data.
+# Within that line, the first and ninth numbers after ':' are respectively the received and transmited bytes.
+function get_bytes
+{
+    line=$(cat /proc/net/dev | grep $interface | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
+    eval $line
+}
 
-if [[ -z $t ]] || [[ -z $crit_lvl ]] || [[ -z $warn_lvl ]] || [[ -z $int ]]; then usage; fi
+# Function which calculates the speed using actual and old byte number.
+# Speed is shown in KByte per second when greater or equal than 1 KByte per second.
+# This function should be called each second.
+function get_velocity
+{
+    value=$1
+    old_value=$2
 
-state=$(ip -s link show $int | xargs| cut -d " " -f9);
-for i in {1,2};do 
-	read rx$i tx$i <<< $(ip -s link show $int | xargs| cut -d " " -f27,40);
-	[[ $i -eq 1 ]] && sleep $t;
-done
-rx_rate=$(echo "scale=2;(($rx2 - $rx1) / $t) / 1024" | bc -l)
-tx_rate=$(echo "scale=2;(($tx2 - $tx1) / $t) / 1024" | bc -l)
+    let vel=$value-$old_value
+	echo -n "$vel";
+}
 
-if [ $(bc <<< "$warn_lvl>$rx_rate") -eq 1 -a $(bc <<< "$crit_lvl>$rx_rate") -eq 1 -a $(bc <<< "$warn_lvl>$tx_rate") -eq 1 -a $(bc <<< "$crit_lvl>$tx_rate") -eq 1 ]; then
-	code="OK"; 
-	output;
-	exit 0;
-elif [ $(bc <<< "$crit_lvl<$rx_rate") -eq 1 -o $(bc <<< "$crit_lvl<$tx_rate") -eq 1 ]; then
-    code="CRITICAL";
-	output;
-    exit 2;
-elif [ $(bc <<< "$warn_lvl<$rx_rate") -eq 1 -o $(bc <<< "$warn_lvl<$tx_rate") -eq 1 ]; then
-	code="WARNING";
-	output;
-	exit 1;
-else
-	code="UNKNOWN";
-	output;
-	exit 3;
-fi
+# Write output and return result
+function output {
+    echo -en $RESULT
+    exit $EXIT_STATUS
+}
+
+# Handle command line options
+do_opts
+
+get_bytes
+old_received_bytes=$received_bytes
+old_transmitted_bytes=$transmitted_bytes
+sleep 1;
+# Get new transmitted and received byte number values.
+get_bytes
+
+# Calculates speeds.
+vel_recv=$(get_velocity $received_bytes $old_received_bytes)
+vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes)
+    
+vel_recvKB=$(echo "scale=3; $vel_recv/1024.0" | bc ) # Convert to decimal
+vel_transKB=$(echo "scale=3; $vel_trans/1024.0" | bc ) # Convert to decimal 
+
+let vel_total=$vel_recv+$vel_trans
+vel_totalKB=$(echo "scale=3; $vel_total/1024.0" | bc ) # Convert to decimal  
+
+RESULT="NET I/O OK - $interface DOWN:$vel_recvKB KB/s \tUP:$vel_transKB KB/s \tTOTAL:$vel_totalKB KB/s \n | DOWN=${vel_recvKB}KB/s; UP:${vel_transKB}KB/s; TOTAL:${vel_totalKB}KB/s;"
+exitstatus=$STATE_OK
+
+# Quit and return information and exit status
+output
