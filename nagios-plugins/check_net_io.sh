@@ -73,7 +73,7 @@ vel_transKB=$(echo "scale=3; $vel_trans/1024.0" | bc ) # Convert to decimal
 let vel_total=$vel_recv+$vel_trans
 vel_totalKB=$(echo "scale=3; $vel_total/1024.0" | bc ) # Convert to decimal  
 
-RESULT="NET I/O OK - $interface DOWN:$vel_recvKB KB/s \tUP:$vel_transKB KB/s \tTOTAL:$vel_totalKB KB/s \n | DOWN=${vel_recvKB}KB/s; UP:${vel_transKB}KB/s; TOTAL:${vel_totalKB}KB/s;"
+RESULT="NET I/O OK - $interface DOWN: $vel_recvKB KB/s UP: $vel_transKB KB/s TOTAL: $vel_totalKB KB/s | DOWN=${vel_recvKB}KB/s; UP=${vel_transKB}KB/s; TOTAL=${vel_totalKB}KB/s;"
 exitstatus=$STATE_OK
 
 # Quit and return information and exit status
