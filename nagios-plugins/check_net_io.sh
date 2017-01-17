@@ -67,11 +67,11 @@ get_bytes
 vel_recv=$(get_velocity $received_bytes $old_received_bytes)
 vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes)
     
-vel_recvKB=$(echo "scale=3; $vel_recv/1024.0" | bc ) # Convert to decimal
-vel_transKB=$(echo "scale=3; $vel_trans/1024.0" | bc ) # Convert to decimal 
+vel_recvKB=$(echo "scale=1; $vel_recv/1024.0" | bc ) # Convert to decimal
+vel_transKB=$(echo "scale=1; $vel_trans/1024.0" | bc ) # Convert to decimal 
 
 let vel_total=$vel_recv+$vel_trans
-vel_totalKB=$(echo "scale=3; $vel_total/1024.0" | bc ) # Convert to decimal  
+vel_totalKB=$(echo "scale=1; $vel_total/1024.0" | bc ) # Convert to decimal  
 
 RESULT="NET I/O OK - $interface DOWN: $vel_recvKB KB/s UP: $vel_transKB KB/s TOTAL: $vel_totalKB KB/s | DOWN=${vel_recvKB}KB/s; UP=${vel_transKB}KB/s; TOTAL=${vel_totalKB}KB/s;"
 exitstatus=$STATE_OK
