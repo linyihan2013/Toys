@@ -155,7 +155,7 @@ connections per second"
 }
 
 do_perfdata() {
-    perfdata="'ActiveConns'=$active_conn 'ReqPerSec'=$reqpsec 'ConPerSec'=$conpsec"
+    perfdata="'Active Connections'=$active_conn 'Requests/Sec'=$reqpsec 'Connections/Sec'=$conpsec"
 }
 
 # Here we go!
