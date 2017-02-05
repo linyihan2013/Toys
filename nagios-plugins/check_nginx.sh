@@ -146,7 +146,7 @@ get_vals() {
     tmp2_conpsec=`echo ${out2}|awk '{print $9}'`
     conpsec=`expr $tmp2_conpsec - $tmp1_conpsec`
 
-	active_conn = `echo ${out2}|awk '{print $3}'`
+	active_conn=`echo ${out2}|awk '{print $3}'`
 }
 
 do_output() {
