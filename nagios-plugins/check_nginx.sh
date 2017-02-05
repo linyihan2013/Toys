@@ -6,40 +6,26 @@ ST_CR=2
 ST_UK=3
 hostname="localhost"
 port=80
-path_pid=/var/run
-name_pid="nginx.pid"
 status_page="nginx_status"
-pid_check=1
 secure=0
 
 print_help() {
     echo ""
     echo "$PROGNAME is a Nagios plugin to check whether nginx is running."
     echo "It also parses the nginx's status page to get requests and"
-    echo "connections per second as well as requests per connection. You"
+    echo "connections per second. You"
     echo "may have to alter your nginx configuration so that the plugin"
     echo "can access the server's status page."
     echo "The plugin is highly configurable for this reason. See below for"
     echo "available options."
     echo ""
-    echo "$PROGNAME -H localhost -P 80 -p /var/run -n nginx.pid "
-	echo "  -s nginx_statut -o /tmp [-w INT] [-c INT] [-S] [-N]"
+    echo "$PROGNAME -H localhost -P 80 -s nginx_statut [-w INT] [-c INT] [-S]"
     echo ""
     echo "Options:"
     echo "  -H/--hostname)"
     echo "     Defines the hostname. Default is: localhost"
     echo "  -P/--port)"
     echo "     Defines the port. Default is: 80"
-    echo "  -p/--path-pid)"
-    echo "     Path where nginx's pid file is being stored. You might need"
-    echo "     to alter this path according to your distribution. Default"
-    echo "     is: /var/run"
-    echo "  -n/--name_pid)"
-    echo "     Name of the pid file. Default is: nginx.pid"
-    echo "  -N/--no-pid-check)"
-    echo "     Turn this on, if you don't want to check for a pid file"
-    echo "     whether nginx is running, e.g. when you're checking a"
-    echo "     remote server. Default is: off"
     echo "  -s/--status-page)"
     echo "     Name of the server's status page defined in the location"
     echo "     directive of your nginx configuration. Default is:"
@@ -68,17 +54,6 @@ while test -n "$1"; do
         --port|-P)
             port=$2
             shift
-            ;;
-        --path-pid|-p)
-            path_pid=$2
-            shift
-            ;;
-        --name-pid|-n)
-            name_pid=$2
-            shift
-            ;;
-        --no-pid-check|-N)
-            pid_check=0
             ;;
         --status-page|-s)
             status_page=$2
@@ -141,15 +116,6 @@ warning/critical thresholds!"
     fi
 }
 
-check_pid() {
-    if [ -f "$path_pid/$name_pid" ]
-    then
-        retval=0
-    else
-        retval=1
-    fi
-}
-
 get_status() {
     if [ "$secure" = 1 ]
     then
@@ -166,7 +132,7 @@ get_status() {
 
     if [ -z "$out1" -o -z "$out2" ]
     then
-        echo "UNKNOWN - Local copy/copies of $status_page is empty."
+        echo "UNKNOWN - Local copy of $status_page is empty."
         exit $ST_UK
     fi
 }
@@ -180,36 +146,21 @@ get_vals() {
     tmp2_conpsec=`echo ${out2}|awk '{print $9}'`
     conpsec=`expr $tmp2_conpsec - $tmp1_conpsec`
 
-    reqpcon=`echo "scale=2; $reqpsec / $conpsec" | bc -l`
-    if [ "$reqpcon" = ".99" ]
-    then
-        reqpcon="1.00"
-    fi
+	active_conn = `echo ${out2}|awk '{print $3}'`
 }
 
 do_output() {
-    output="nginx is running. $reqpsec requests per second, $conpsec \
-connections per second ($reqpcon requests per connection)"
+    output="$active_conn active connections, $reqpsec requests per second, $conpsec \
+connections per second"
 }
 
 do_perfdata() {
-    perfdata="'reqpsec'=$reqpsec 'conpsec'=$conpsec 'conpreq'=$reqpcon"
+    perfdata="'ActiveConns'=$active_conn 'ReqPerSec'=$reqpsec 'ConPerSec'=$conpsec"
 }
 
 # Here we go!
 get_wcdiff
 val_wcdiff
-
-if [ ${pid_check} = 1 ]
-then
-    check_pid
-    if [ "$retval" = 1 ]
-    then
-        echo "There's no pid file for nginx. Is nginx running? Please \
-also make sure whether your pid path and name is correct."
-        exit $ST_CR
-    fi
-fi
 
 get_status
 get_vals
@@ -220,17 +171,17 @@ if [ -n "$warning" -a -n "$critical" ]
 then
     if [ "$reqpsec" -ge "$warning" -a "$reqpsec" -lt "$critical" ]
     then
-        echo "WARNING - ${output} | ${perfdata}"
+        echo "NGINX WARNING - ${output} | ${perfdata}"
 	exit $ST_WR
     elif [ "$reqpsec" -ge "$critical" ]
     then
-        echo "CRITICAL - ${output} | ${perfdata}"
+        echo "NGINX CRITICAL - ${output} | ${perfdata}"
 	exit $ST_CR
     else
-        echo "OK - ${output} | ${perfdata} ]"
+        echo "NGINX OK - ${output} | ${perfdata} ]"
 	exit $ST_OK
     fi
 else
-    echo "OK - ${output} | ${perfdata}"
+    echo "NGINX OK - ${output} | ${perfdata}"
     exit $ST_OK
 fi
